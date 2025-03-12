@@ -1,0 +1,26 @@
+import csv
+
+
+def read_file(file: str) -> list:
+    """
+    Read csv file and return dictionary of data
+    :param file: file path
+    :return: dictionary of data
+    """
+    with open(file, 'r', encoding='utf-8', newline='') as f:
+        dict_data = csv.DictReader(f)
+        list_of_dict = list(dict_data)
+    return list_of_dict
+
+
+def write_file(file: str, content: list):
+    """
+    Write evaluated data to a new csv file
+    :param file: Location of the new file
+    :param content: List of evaluated data
+    """
+    keys = content[0].keys()
+    with open(file, 'w', encoding='utf-8', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=keys)
+        writer.writeheader()
+        writer.writerows(content)
