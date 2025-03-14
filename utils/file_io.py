@@ -5,7 +5,7 @@ def read_file(file: str) -> list:
     """
     Read csv file and return dictionary of data
     :param file: file path
-    :return: dictionary of data
+    :return: list of dictionaries with the data
     """
     with open(file, 'r', encoding='utf-8', newline='') as f:
         dict_data = csv.DictReader(f)

@@ -41,7 +41,7 @@ GENDER_MALE_LIST = ['m', 'mann', 'männlich', 'male']
 GENDER_FEMALE_LIST = ['f', 'frau', 'w', 'weiblich', 'female']
 
 # List of possible strings that represent invalid values
-INVALID_VALUES = ['-', '/', '', 'F', 'f', 'U', 'u']
+INVALID_VALUES = ['-', '/', '', 'f', 'u']
 INVALID_CHAR = '-'
 INVALID_HIGH = float('inf')
 INVALID_LOW = float('-inf')

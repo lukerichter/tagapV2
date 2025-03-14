@@ -1,4 +1,3 @@
-from bisect import bisect
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -105,7 +104,7 @@ def find_best_and_convert(high_is_best: bool, person: dict, keys: list) -> float
     """
     value_list = []
     for key in keys:
-        if person[key].strip() in INVALID_VALUES:
+        if person[key].strip().lower() in INVALID_VALUES:
             value_list.append(INVALID_LOW if high_is_best else INVALID_HIGH)
         else:
             value_list.append(float(person[key].replace(',', '.')))
