@@ -1,8 +1,9 @@
+from bisect import bisect
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from utils.constants import *
-from utils.tables import lookup_table
+from utils.tables import find_table
 
 
 def evaluate(data: list, test_date: str):
@@ -13,185 +14,106 @@ def evaluate(data: list, test_date: str):
     :return: list of evaluated persons
     """
     evaluated_list = []
+
     for person in data:
-        age = calculate_age(person[BIRTH_DATE], test_date)
+        age = calc_age(person[BIRTH_DATE], test_date)
         gender = parse_gender(person[GENDER])
         table = find_table(age, gender)
-        print(f'\n{person[NAME]} Age: {age}, Gender: {gender}')
 
         # Calculate the score of each category for the person
-
         best_agility = find_best_and_convert(True, person, AGILITY)
-        score_agility = calculate_agility(best_agility, table)
-        print(f'- Agility: {person[AGILITY]} -> {score_agility}')
+        score_agility = calc_category_score(best_agility, table["Agility"], ">")
 
-        best_throw = find_best_and_convert(True, person, THROWING1, THROWING2, THROWING3)
-        score_throw = calculate_throwing(best_throw, table)
-        print(f'- Throwing: {best_throw} -> {score_throw}')
+        best_throw = find_best_and_convert(True, person, THROWING)
+        score_throw = calc_category_score(best_throw, table["Throwing"], ">")
 
-        best_jump = find_best_and_convert(True, person, JUMPING1, JUMPING2)
-        score_jump = calculate_jumping(best_jump, table)
-        print(f'- Jumping: {best_jump} -> {score_jump}')
+        best_jump = find_best_and_convert(True, person, JUMPING)
+        score_jump = calc_category_score(best_jump, table["Jumping"], ">")
 
-        best_sprint = find_best_and_convert(False, person, SPRINTING1, SPRINTING2)
-        score_sprint = calculate_sprinting(best_sprint, table)
-        print(f'- Sprinting: {best_sprint} -> {score_sprint}')
+        best_sprint = find_best_and_convert(False, person, SPRINTING)
+        score_sprint = calc_category_score(best_sprint, table["Sprinting"], "<")
 
         best_coordination = find_best_and_convert(False, person, COORDINATION)
-        score_coordination = calculate_coordination(best_coordination, table)
-        print(f'- Coordination: {best_coordination} -> {score_coordination}')
+        score_coordination = calc_category_score(best_coordination, table["Coordination"], "<")
 
         best_endurance = find_best_and_convert(True, person, ENDURANCE)
-        score_endurance = calculate_endurance(best_endurance, table)
-        print(f'- Endurance: {best_endurance} -> {score_endurance}')
+        score_endurance = calc_category_score(best_endurance, table["Endurance"], ">")
 
-        # Convert all values to the correct format, because Excel can't handle the german format
-        best_agility_str = str(best_agility).replace('.', ',')
-        best_throw_str = str(best_throw).replace('.', ',')
-        best_jump_str = str(best_jump).replace('.', ',')
-        best_sprint_str = str(best_sprint).replace('.', ',')
-        best_coordination_str = str(best_coordination).replace('.', ',')
-        best_endurance_str = str(best_endurance).replace('.', ',')
-        sum_str = (str(score_agility + score_throw + score_jump + score_sprint + score_coordination + score_endurance)
-                   .replace('.', ','))
-        age_str = str(age).replace('.', ',')
+        # Print the results for the person (for debugging)
+        print(f'{person[NAME]} {' ' * (20 - len(person[NAME]))}'
+              f'-> Agility: {score_agility}, Throwing: {score_throw}, Jumping: {score_jump}, '
+              f'Sprinting: {score_sprint}, Coordination: {score_coordination}, Endurance: {score_endurance}, '
+              f'Total: {score_agility + score_throw + score_jump + score_sprint + score_coordination + score_endurance}')
 
         # Build a new dict for the evaluated person and append to the list
+        # Convert all values to the correct format, because Excel can't handle the german format
+        total = score_agility + score_throw + score_jump + score_sprint + score_coordination + score_endurance
         evaluated_list.append({
             OUT_NAME: person[NAME],
             OUT_SCHOOL: person[SCHOOL],
             OUT_GENDER: gender,
-            OUT_AGE: age_str,
+            OUT_AGE: convert_format(age),
             OUT_HEIGHT: person[HEIGHT],
-            OUT_AGILITY: best_agility_str,
+            OUT_AGILITY: convert_format(best_agility),
             OUT_AGILITY_POINTS: score_agility,
-            OUT_THROWING: best_throw_str,
+            OUT_THROWING: convert_format(best_throw),
             OUT_THROWING_POINTS: score_throw,
-            OUT_JUMPING: best_jump_str,
+            OUT_JUMPING: convert_format(best_jump),
             OUT_JUMPING_POINTS: score_jump,
-            OUT_SPRINTING: best_sprint_str,
+            OUT_SPRINTING: convert_format(best_sprint),
             OUT_SPRINTING_POINTS: score_sprint,
-            OUT_COORDINATION: best_coordination_str,
+            OUT_COORDINATION: convert_format(best_coordination),
             OUT_COORDINATION_POINTS: score_coordination,
-            OUT_ENDURANCE: best_endurance_str,
+            OUT_ENDURANCE: convert_format(best_endurance),
             OUT_ENDURANCE_POINTS: score_endurance,
-            OUT_SUM: sum_str
+            OUT_SUM: convert_format(total)
         })
 
     return evaluated_list
 
 
-def find_best_and_convert(high_is_best: bool, person: dict, *values: str) -> float:
+def calc_category_score(val: float, lookup_list: list, op: str) -> int:
+    """
+    Calculate the score for a category based on the lookup list and an operator (either '<' or '>')
+    :param val: value to compare
+    :param lookup_list: point list for the category
+    :param op: operator to compare the values ('<' or '>')
+    :return: score for the category
+    """
+    return sum(1 for x in lookup_list if (op == "<" and val < x) or (op == ">" and val > x))
+
+
+def convert_format(value: float) -> str:
+    """
+    Convert the format of the value from english to german
+    :param value: value to convert
+    :return: converted value
+    """
+    if value == INVALID_LOW or value == INVALID_HIGH:
+        return INVALID_CHAR
+
+    return str(value).replace(',', '.')
+
+
+def find_best_and_convert(high_is_best: bool, person: dict, keys: list) -> float:
     """
     Find the best value from the given values and convert it to float
     :param high_is_best: flag if high values are better
     :param person: person dictionary
-    :param values: values to compare
-    :return: best value as float
+    :param keys: keys of values in the person dictionary to compare to
+    :return: best value
     """
-    value_list = [float(person[value].replace(',', '.')) for value in values]
-    best_value = max(value_list) if high_is_best else min(value_list)
+    value_list = []
+    for key in keys:
+        if person[key].strip() in INVALID_VALUES:
+            value_list.append(INVALID_LOW if high_is_best else INVALID_HIGH)
+        else:
+            value_list.append(float(person[key].replace(',', '.')))
 
-    return best_value
-
-
-def calculate_agility(value: float, table: dict) -> int:
-    """
-    Calculate the score for the agility test
-    :param value: value of the test
-    :param table: table for the test
-    :return: score for the test
-    """
-    lookup_list = table["Agility"]
-    score = 0
-    for i in range(30):
-        if value > lookup_list[i]:
-            score += 1
-
-    return score
+    return max(value_list) if high_is_best else min(value_list)
 
 
-def calculate_throwing(value: float, table: dict) -> int:
-    """
-    Calculate the score for the throw test
-    :param value: value of the test
-    :param table: table for the test
-    :return: score for the test
-    """
-    lookup_list = table["Throwing"]
-    score = 0
-    for i in range(30):
-        if value > lookup_list[i]:
-            score += 1
-
-    return score
-
-
-def calculate_jumping(value: float, table: dict) -> int:
-    """
-    Calculate the score for the jump test
-    :param value: value of the test
-    :param table: table for the test
-    :return: score for the test
-    """
-    lookup_list = table["Jumping"]
-    score = 0
-    for i in range(30):
-        if value > lookup_list[i]:
-            score += 1
-
-    return score
-
-
-def calculate_sprinting(value: float, table: dict) -> int:
-    """
-    Calculate the score for the sprint test
-    :param value: value of the test
-    :param table: table for the test
-    :return: score for the test
-    """
-    lookup_list = table["Sprinting"]
-    score = 0
-    for i in range(30):
-        if value < lookup_list[i]:
-            score += 1
-
-    return score
-
-
-def calculate_coordination(value: float, table: dict) -> int:
-    """
-    Calculate the score for the coordination test
-    :param value: value of the test
-    :param table: table for the test
-    :return: score for the test
-    """
-    lookup_list = table["Coordination"]
-    score = 0
-    for i in range(30):
-        if value < lookup_list[i]:
-            score += 1
-
-    return score
-
-
-def calculate_endurance(value: float, table: dict) -> int:
-    """
-    Calculate the score for the endurance test
-    :param value: value of the test
-    :param table: table for the test
-    :return: score for the test
-    """
-    lookup_list = table["Endurance"]
-    score = 0
-    for i in range(30):
-        if value > lookup_list[i]:
-            score += 1
-
-    return score
-
-
-def calculate_age(birthdate_str: str, test_date_str: str) -> int:
+def calc_age(birthdate_str: str, test_date_str: str) -> int:
     """
     Calculate age of the person based on the birthdate and the test date in
     the format 'mm/dd/yyyy' or 'dd.mm.yyyy'
@@ -225,17 +147,3 @@ def parse_gender(gender_str: str) -> str:
         return MALE
     if gender_str in GENDER_FEMALE_LIST:
         return FEMALE
-
-
-def find_table(age: int, gender: str):
-    """
-    Find the table based on
-    :param age: age of the person
-    :param gender: gender of the person
-    :return: table name
-    """
-    # Parse age to the nearest available table
-    parsed_age = 7 if age < 7 else (10 if age > 10 else age)
-    table = lookup_table[gender][parsed_age]
-
-    return table
