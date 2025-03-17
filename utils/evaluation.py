@@ -5,7 +5,7 @@ from utils.constants import *
 from utils.tables import find_table
 
 
-def evaluate(data: list, test_date: str):
+def evaluate(data: list, test_date: datetime) -> list:
     """
     Evaluate all person data
     :param data: list of persons
@@ -91,7 +91,7 @@ def convert_format(value: float) -> str:
     if value == INVALID_LOW or value == INVALID_HIGH:
         return INVALID_CHAR
 
-    return str(value).replace(',', '.')
+    return str(value).replace('.', ',')
 
 
 def find_best_and_convert(high_is_best: bool, person: dict, keys: list) -> float:
@@ -112,17 +112,16 @@ def find_best_and_convert(high_is_best: bool, person: dict, keys: list) -> float
     return max(value_list) if high_is_best else min(value_list)
 
 
-def calc_age(birthdate_str: str, test_date_str: str) -> int:
+def calc_age(birthdate_str: str, test_date: datetime) -> int:
     """
     Calculate age of the person based on the birthdate and the test date in
     the format 'mm/dd/yyyy' or 'dd.mm.yyyy'
     :param birthdate_str: birthdate of the person
-    :param test_date_str: date of the test
+    :param test_date: date of the test
     :return: age of the person rounded to the nearest half year
     """
     time_format = '%m/%d/%Y' if '/' in birthdate_str else '%d.%m.%Y'
     birthdate = datetime.strptime(birthdate_str, time_format)
-    test_date = datetime.strptime(test_date_str, time_format)
 
     # Calculate age in years with decimal places for months and days
     delta = relativedelta(test_date, birthdate)
