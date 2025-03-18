@@ -1,9 +1,76 @@
-import os
-import csv
+from typing import Optional
 
-from utils.constants import FEMALE, MALE
+from utils.classes import Error
+from utils.constants import *
 
-table_folder = '../data/tables'
+
+def test_and_prepare_table(table: list) -> list[Error]:
+    """
+    Test the table for the correct values and format. Also prepare the table for further processing.
+    If this method returns an empty list, the table is correct. Only then the table can be used for further processing.
+    :return: List of errors that were found
+    """
+    errors = []
+
+    # Check if the table has the correct keys
+    # The length of the table should be at least 1
+    keys = table[0].keys()
+    if not set(keys) == set(KEYS):
+        errors.append(Error(KEY_ERROR))
+        return errors  # Further checks are not possible
+
+    # Check if the values are in the correct format
+    for row, row_dict in enumerate(table):
+        for col, value in row_dict.items():
+            value = value.strip()
+            new = value
+
+            if col == GENDER:
+                new = parse_gender(value)
+                if new is None:
+                    errors.append(Error(GENDER_ERROR, col, row, value))
+                    continue
+
+            if col in FLOAT_KEYS:
+                new = parse_float(value)
+                if new is None:
+                    errors.append(Error(VALUE_ERROR, col, row, value))
+
+                    continue
+
+            # TODO: Check date format
+
+            # Replace the value in the table if no error occurred
+            table[row][col] = new
+
+    return errors
+
+
+def parse_float(value: str) -> Optional[float]:
+    """
+    Parse the string to a float (recognizes invalid fields)
+    :param value: float string
+    :return: standardized float / None if invalid
+    """
+    try:
+        return float(value.replace(',', '.'))
+    except ValueError:
+        return INVALID if value in INVALID_LIST else None
+
+
+def parse_gender(gender_str: str) -> Optional[str]:
+    """
+    Parse the gender from the string to a standardized format
+    :param gender_str: gender string
+    :return: standardized gender string / None if invalid
+    """
+    gender_str = gender_str.strip().lower()
+    if gender_str in MALE_LIST:
+        return MALE
+    if gender_str in FEMALE_LIST:
+        return FEMALE
+
+    return None
 
 
 def find_table(age: int, gender: str):
@@ -18,57 +85,6 @@ def find_table(age: int, gender: str):
     table = lookup_table[gender][parsed_age]
 
     return table
-
-
-def convert_data_folder():
-    """
-    Convert all files from table folder to dict
-    """
-    big_dict = {}
-    male_dict = {}
-    female_dict = {}
-    big_dict[MALE] = male_dict
-    big_dict[FEMALE] = female_dict
-
-    for file in os.listdir(table_folder):
-        table_dict = {}
-
-        with open(f'{table_folder}/{file}', 'r', encoding='utf-8', newline='') as f:
-            data = list(csv.reader(f))
-
-        dict_key = float(
-            file.lower()
-            .replace('table', '')
-            .replace('.csv', '')
-            .replace('_', '.')
-            .replace('m', '')
-            .replace('w', '')
-        )
-
-        if file.find('M') != -1:
-            male_dict[dict_key] = table_dict
-        else:
-            female_dict[dict_key] = table_dict
-
-        table_dict["Endurance"] = []
-        table_dict["Agility"] = []
-        table_dict["Throwing"] = []
-        table_dict["Jumping"] = []
-        table_dict["Sprinting"] = []
-        table_dict["Coordination"] = []
-
-        for i, row in enumerate(data):
-            if i == 0 or i == len(data) - 1:
-                continue
-
-            table_dict["Endurance"].append(float(row[0].replace(',', '.')))
-            table_dict["Agility"].append(float(row[1].replace(',', '.')))
-            table_dict["Throwing"].append(float(row[2].replace(',', '.')))
-            table_dict["Jumping"].append(float(row[3].replace(',', '.')))
-            table_dict["Sprinting"].append(float(row[4].replace(',', '.')))
-            table_dict["Coordination"].append(float(row[5].replace(',', '.')))
-
-    print(big_dict)
 
 
 lookup_table = {

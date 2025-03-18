@@ -6,11 +6,14 @@ BIRTH_DATE = 'Geb. Datum'
 HEIGHT = 'Größe'
 
 AGILITY = ['Rumpf']
-THROWING = ['Ball 1', 'Ball 2', 'Ball 2']
-JUMPING = ['Stand 1', 'Stand 2']
+THROWING = ['Ball 1', 'Ball 2', 'Ball 3']
+JUMPING = ['Stand 1', 'Stand 2', 'Stand 3']
 SPRINTING = ['Sprint 1', 'Sprint 2']
 COORDINATION = ['Koordination']
 ENDURANCE = ['Ausdauer']
+
+KEYS = [NAME, SCHOOL, GENDER, BIRTH_DATE, HEIGHT, *AGILITY, *THROWING, *JUMPING, *SPRINTING, *COORDINATION, *ENDURANCE]
+FLOAT_KEYS = [*AGILITY, *THROWING, *JUMPING, *SPRINTING, *COORDINATION, *ENDURANCE]
 
 # Keys for the outgoing csv dict
 OUT_NAME = 'Name'
@@ -32,16 +35,17 @@ OUT_ENDURANCE = '8-Min'
 OUT_ENDURANCE_POINTS = '8-Min-Pkt.'
 OUT_SUM = 'Gesamt'
 
-# Strings that represent the gender
+# Strings that represent the gender and Lists of possible strings that represent the gender
 MALE = 'm'
 FEMALE = 'w'
-
-# Lists of possible strings that represent the gender
-GENDER_MALE_LIST = ['m', 'mann', 'männlich', 'male']
-GENDER_FEMALE_LIST = ['f', 'frau', 'w', 'weiblich', 'female']
+MALE_LIST = ['m', 'j', 'mann', 'männlich', 'junge']
+FEMALE_LIST = ['f', 'frau', 'w', 'weiblich']
 
 # List of possible strings that represent invalid values
-INVALID_VALUES = ['-', '/', '', 'f', 'u']
-INVALID_CHAR = '-'
-INVALID_HIGH = float('inf')
-INVALID_LOW = float('-inf')
+INVALID_LIST = ['-', '/', '', 'f', 'u']
+INVALID = '-'
+
+# Error ids
+KEY_ERROR = 1
+GENDER_ERROR = 2
+VALUE_ERROR = 3

@@ -7,7 +7,8 @@ from utils.tables import find_table
 
 def evaluate(data: list, test_date: datetime) -> list:
     """
-    Evaluate all person data
+    Evaluate all person data. This method does only work if the data is correct.
+    Use the method ``test_and_prepare_table()`` to prepare the data first.
     :param data: list of persons
     :param test_date: date of the test
     :return: list of evaluated persons
@@ -16,8 +17,7 @@ def evaluate(data: list, test_date: datetime) -> list:
 
     for person in data:
         age = calc_age(person[BIRTH_DATE], test_date)
-        gender = parse_gender(person[GENDER])
-        table = find_table(age, gender)
+        table = find_table(age, person[GENDER])
 
         # Calculate the score of each category for the person
         best_agility = find_best_and_convert(True, person, AGILITY)
@@ -50,7 +50,7 @@ def evaluate(data: list, test_date: datetime) -> list:
         evaluated_list.append({
             OUT_NAME: person[NAME],
             OUT_SCHOOL: person[SCHOOL],
-            OUT_GENDER: gender,
+            OUT_GENDER: person[GENDER],
             OUT_AGE: convert_format(age),
             OUT_HEIGHT: person[HEIGHT],
             OUT_AGILITY: convert_format(best_agility),
@@ -88,8 +88,8 @@ def convert_format(value: float) -> str:
     :param value: value to convert
     :return: converted value
     """
-    if value == INVALID_LOW or value == INVALID_HIGH:
-        return INVALID_CHAR
+    if value == float('-inf') or value == float('inf'):
+        return INVALID
 
     return str(value).replace('.', ',')
 
@@ -104,10 +104,10 @@ def find_best_and_convert(high_is_best: bool, person: dict, keys: list) -> float
     """
     value_list = []
     for key in keys:
-        if person[key].strip().lower() in INVALID_VALUES:
-            value_list.append(INVALID_LOW if high_is_best else INVALID_HIGH)
+        if person[key] == INVALID:
+            value_list.append(float('-inf') if high_is_best else float('inf'))
         else:
-            value_list.append(float(person[key].replace(',', '.')))
+            value_list.append(person[key])
 
     return max(value_list) if high_is_best else min(value_list)
 
@@ -132,16 +132,3 @@ def calc_age(birthdate_str: str, test_date: datetime) -> int:
     rounded_age += 0.5 if age_in_years - rounded_age >= 0.5 else 0
 
     return rounded_age
-
-
-def parse_gender(gender_str: str) -> str:
-    """
-    Parse the gender from the string to a standardized format
-    :param gender_str: gender string
-    :return: standardized gender string
-    """
-    gender_str = gender_str.strip().lower()
-    if gender_str in GENDER_MALE_LIST:
-        return MALE
-    if gender_str in GENDER_FEMALE_LIST:
-        return FEMALE
