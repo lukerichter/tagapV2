@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import filedialog
 
 from utils.evaluation import evaluate
-from utils.io import read_file, write_file
+from utils.io import read_file, write_file, create_pattern_table
 from utils.tables import test_and_prepare_table
 
 b_x = 372
@@ -18,6 +18,8 @@ def run_gui():
 
 
 class GUI:
+    f_types = [("CSV", "*.csv")]
+
     def __init__(self, root):
         self.data = None
         self.target_file = None
@@ -93,8 +95,7 @@ class GUI:
             print("Invalid date format")
 
     def upload_file(self):
-        f_types = [("CSV", "*.csv")]
-        file_name = filedialog.askopenfilename(filetypes=f_types)
+        file_name = filedialog.askopenfilename(filetypes=self.f_types)
         self.read_file_and_prepare(file_name)
 
     def read_file_and_prepare(self, file_name):
@@ -109,14 +110,14 @@ class GUI:
             self.data = data
 
     def save_file(self):
-        f_types = [("CSV", "*.csv")]
         default_name = f"Auswertung_TAG_{str(self.test_date.year)}"
-        file_io = filedialog.asksaveasfile(filetypes=f_types, defaultextension=".csv", initialfile=default_name)
+        file_io = filedialog.asksaveasfile(filetypes=self.f_types, defaultextension=".csv", initialfile=default_name)
         self.target_file = file_io.name
         self.run_evaluation()
 
     def download_pattern(self):
-        pass
+        file = filedialog.asksaveasfile(filetypes=self.f_types, defaultextension=".csv", initialfile="Vorlage_TAG")
+        create_pattern_table(file.name)
 
     def run_evaluation(self):
         data = evaluate(self.data, self.test_date)

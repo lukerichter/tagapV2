@@ -1,5 +1,7 @@
 import csv
 
+from utils.constants import KEYS
+
 
 def read_file(file: str) -> list:
     """
@@ -24,3 +26,13 @@ def write_file(file: str, content: list):
         writer = csv.DictWriter(f, fieldnames=keys)
         writer.writeheader()
         writer.writerows(content)
+
+
+def create_pattern_table(file: str):
+    """
+    Create a pattern table for the user to download
+    :return:
+    """
+    with open(file, 'w', encoding='utf-8', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=KEYS)
+        writer.writeheader()
