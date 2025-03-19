@@ -1,6 +1,6 @@
 # tagapV2 - TAG Auswertungsprogramm
 
-<h2> Beschreibung </h2>
+## Beschreibung
 
 Dieses Projekt ist ein Prototyp für eine Anwendung, die es ermöglicht, den TAG Test vollständig automatisiert
 auszuwerten. Dazu ist es nur nötig, die gesammelten Daten in eine vorgegebene Tabelle (.csv) zu schreiben und den
@@ -9,7 +9,11 @@ Ergebnistabelle aus.
 
 ## Installation
 
+Wer sich auskennt, klont das Repository, läd sich Python runter und führt die Datei `start.py` aus. Wer sich nicht
+auskennt, folgt den Anweisungen unten.
+
 <details>
+<summary> Klicken Sie hier, um die Anleitung zu sehen </summary>
 <h3> 1. Installation von Python </h3>
 
 Um das Programm starten zu können, müssen sie zuerst Python auf ihrem Rechner installieren. Dies ist notwendig, da das
@@ -25,24 +29,31 @@ Den Download finden Sie unter folgendem Link: [Download Python](https://www.pyth
 
 Nachdem Sie Python installiert haben, können Sie das Programm herunterladen.
 
-- Dazu klicken Sie auf den grünen Button "Code" und wählen "Download ZIP" aus.
-  ![Image not loading](images/download_button.png)
+- Klicken sie dazu auf den folgenden Link und wählen sie zwischen .zip und .tar.gz Datei aus:
+  [Download Zip](https://github.com/lukerichter/tagapV2/releases/tag/v1.0),
+  [Download tar.gz](https://github.com/lukerichter/tagapV2/archive/refs/tags/v1.0.tar.gz)
+
+> **Hinweis:** Bei Windows empfiehlt sich die .zip Datei, da diese einfacher zu entpacken ist. Bei MacOS und Linux
+> können sie auch die .tar.gz Datei verwenden.
 
 <br>
 
-- Entpacken Sie die heruntergeladene Datei in einen Ordner ihrer Wahl. Klicken Sie dazu mit der rechten Maustaste auf
-  die Datei und wählen Sie "All extrahieren" aus.
-  ![Image not loading](images/extract_zip.png)
+- Entpacken Sie das heruntergeladene Archiv in einen Ordner ihrer Wahl. Nach dem Entpacken können Sie den Ordner
+  öffnen und die Dateien darin sehen.
 
-> **Hinweis:** Sie können auch ein anderes Programm verwenden, um die Datei zu
-> entpacken. Hierzu können Sie z.B. 7zip oder WinRAR verwenden. Es reicht aber aus das Windows-Standardprogramm zu
-> nutzen.
+> **Hinweis:** Bei Windows klicken Sie mit der rechten Maustaste auf das Archiv und wählen Sie "Alle extrahieren" aus.
+> Bei MacOS können Sie nach einem Rechtsklick auf das Archiv "Öffnen mit" und anschließend "Archivierungsprogramm"
+> auswählen.
+
+> **Wichtig:** Im Ordner dürfen keine Dateien oder Ordner hinzugefügt oder entfernt werden. Dies könnte zu Fehlern
+> führen oder das Programm unbrauchbar machen. Sie können jedoch den gesamten Ordner an einen anderen Ort verschieben.
 
 <br>
 <h3> 3. Starten des Programms </h3>
 
 Nachdem sie das Programm installiert haben, können Sie es starten. Dazu müssen Sie die Datei `start.py` im gerade
-heruntergeladenen Ordner ausführen. Bitte lesen Sie anschließend die Erklärung unter dem Kapitel "Anwendung".
+heruntergeladenen Ordner ausführen. Bitte lesen Sie anschließend die Erklärung unter dem Kapitel "Anwendung", um eine
+Erklärung zur Benutzung des Programms zu erhalten.
 
 </details>
 
