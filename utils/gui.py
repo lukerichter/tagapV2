@@ -43,6 +43,8 @@ class GUI:
         self.root.geometry("540x312")
         self.root.config(bg="#1F1F1F")
 
+    # GUI elements --------------------------------------------------
+
     def add_output_field(self):
         text_box = tk.Text(self.root, height=13, width=32, state="disabled", padx=20, pady=20, wrap="word",
                            bg=element_bg, fg=element_fg, borderwidth=0, spacing2=8, font=12)
@@ -69,7 +71,7 @@ class GUI:
 
     def add_save_button(self):
         button_download = tk.Button(self.root, command=self.save_file, width=b_width, height=b_height,
-                                    text="Speichern", bg=element_bg, fg=element_fg, borderwidth=0)
+                                    text="Speichern", bg=element_bg, fg=element_fg, borderwidth=0, state="disabled")
         button_download.place(x=b_x, y=120)
         return button_download
 
@@ -78,6 +80,8 @@ class GUI:
                                             bg="#111", fg=element_fg, borderwidth=0, text="Download Pattern")
         button_download_pattern.place(x=b_x, y=256)
         return button_download_pattern
+
+    # Button functions --------------------------------------------
 
     def get_date(self):
         raw_date = self.date_input.get("1.0", "end").strip()
@@ -92,33 +96,54 @@ class GUI:
             self.test_date = datetime.datetime.strptime(raw_date.strip(), date_format)
             print(raw_date, "->", self.test_date)
         except ValueError:
+            self.test_date = None
             print("Invalid date format")
+
+        self.check_save_button()
 
     def upload_file(self):
         file_name = filedialog.askopenfilename(filetypes=self.f_types)
-        self.read_file_and_prepare(file_name)
 
-    def read_file_and_prepare(self, file_name):
         data = read_file(file_name)
         errors = test_and_prepare_table(data)
         if errors:
-            self.text_output.config(state="normal")
+            self.data = None
             for error in errors:
-                self.text_output.insert("end", str(error))
-            self.text_output.config(state="disabled")
+                self.write_textbox(str(error), False)
         else:
             self.data = data
+
+        # TODO: Add a message
+        self.check_save_button()
 
     def save_file(self):
         default_name = f"Auswertung_TAG_{str(self.test_date.year)}"
         file_io = filedialog.asksaveasfile(filetypes=self.f_types, defaultextension=".csv", initialfile=default_name)
-        self.target_file = file_io.name
-        self.run_evaluation()
+        if file_io is not None:
+            self.target_file = file_io.name
+            self.run_evaluation()
+            # TODO: Add a message
 
     def download_pattern(self):
         file = filedialog.asksaveasfile(filetypes=self.f_types, defaultextension=".csv", initialfile="Vorlage_TAG")
         create_pattern_table(file.name)
+        # TODO: Add a message
+
+    # Helper functions -------------------------------------------\
 
     def run_evaluation(self):
         data = evaluate(self.data, self.test_date)
         write_file(self.target_file, data)
+
+    def check_save_button(self):
+        if self.data is not None and self.test_date is not None:
+            self.save_button.config(state="normal")
+        else:
+            self.save_button.config(state="disabled")
+
+    def write_textbox(self, mes, replace):
+        self.text_output.config(state="normal")
+        if replace:
+            self.text_output.delete("1.0", "end")
+        self.text_output.insert("end", mes + "\n")
+        self.text_output.config(state="disabled")
