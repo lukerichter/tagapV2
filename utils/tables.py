@@ -15,7 +15,7 @@ def test_and_prepare_table(table: list) -> list[Error]:
     # Check if the table has the correct keys
     # The length of the table should be at least 1
     keys = table[0].keys()
-    if not set(keys) == set(KEYS):
+    if not set(keys) == set(ALL_KEYS):
         errors.append(Error(KEY_ERROR))
         return errors  # Further checks are not possible
 

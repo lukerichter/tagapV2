@@ -12,7 +12,7 @@ SPRINTING = ['Sprint 1', 'Sprint 2']
 COORDINATION = ['Koordination']
 ENDURANCE = ['Ausdauer']
 
-KEYS = [NAME, SCHOOL, GENDER, BIRTH_DATE, HEIGHT, *AGILITY, *THROWING, *JUMPING, *SPRINTING, *COORDINATION, *ENDURANCE]
+ALL_KEYS = [NAME, SCHOOL, GENDER, BIRTH_DATE, HEIGHT, *AGILITY, *THROWING, *JUMPING, *SPRINTING, *COORDINATION, *ENDURANCE]
 FLOAT_KEYS = [*AGILITY, *THROWING, *JUMPING, *SPRINTING, *COORDINATION, *ENDURANCE]
 
 # Keys for the outgoing csv dict
@@ -45,7 +45,13 @@ FEMALE_LIST = ['f', 'frau', 'w', 'weiblich']
 INVALID_LIST = ['-', '/', '', 'f', 'u']
 INVALID = '-'
 
-# Error ids
+# Error ids and their corresponding error messages
 KEY_ERROR = 1
 GENDER_ERROR = 2
 VALUE_ERROR = 3
+
+ERROR_MESSAGES = {
+    KEY_ERROR: 'Ungültiger Schlüssel',
+    GENDER_ERROR: 'Ungültiges Geschlecht',
+    VALUE_ERROR: 'Ungültiger Wert'
+}

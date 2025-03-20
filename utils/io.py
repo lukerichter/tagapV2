@@ -1,6 +1,6 @@
 import csv
 
-from utils.constants import KEYS
+from utils.constants import ALL_KEYS
 
 
 def read_file(file: str) -> list:
@@ -34,5 +34,5 @@ def create_pattern_table(file: str):
     :return:
     """
     with open(file, 'w', encoding='utf-8', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=KEYS)
+        writer = csv.DictWriter(f, fieldnames=ALL_KEYS)
         writer.writeheader()
