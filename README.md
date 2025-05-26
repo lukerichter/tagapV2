@@ -30,7 +30,7 @@ Den Download finden Sie unter folgendem Link: [Download Python](https://www.pyth
 Nachdem Sie Python installiert haben, können Sie das Programm herunterladen.
 
 - Klicken sie dazu auf den folgenden Link und wählen sie zwischen .zip und .tar.gz Datei aus:
-  [Download Zip](https://github.com/lukerichter/tagapV2/releases/tag/v1.0),
+  [Download Zip](https://github.com/lukerichter/tagapV2/archive/refs/tags/v1.0.zip),
   [Download tar.gz](https://github.com/lukerichter/tagapV2/archive/refs/tags/v1.0.tar.gz)
 
 > **Hinweis:** Bei Windows empfiehlt sich die .zip Datei, da diese einfacher zu entpacken ist. Bei MacOS und Linux
