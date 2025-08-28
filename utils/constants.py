@@ -46,12 +46,16 @@ INVALID_LIST = ['-', '/', '', 'f', 'u']
 INVALID = '-'
 
 # Error ids and their corresponding error messages
+EMPTY_ERROR = 0
 KEY_ERROR = 1
 GENDER_ERROR = 2
 VALUE_ERROR = 3
+DATE_ERROR = 4
 
 ERROR_MESSAGES = {
+    EMPTY_ERROR: 'Leere Zeile',
     KEY_ERROR: 'Ungültiger Schlüssel',
     GENDER_ERROR: 'Ungültiges Geschlecht',
-    VALUE_ERROR: 'Ungültiger Wert'
+    VALUE_ERROR: 'Ungültiger Wert',
+    DATE_ERROR: 'Ungültiges Datum'
 }

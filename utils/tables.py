@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from utils.classes import Error
@@ -21,9 +22,16 @@ def test_and_prepare_table(table: list) -> list[Error]:
 
     # Check if the values are in the correct format
     for row, row_dict in enumerate(table):
+        empty_row = True
+
         for col, value in row_dict.items():
             value = value.strip()
             new = value
+
+            if empty_row:
+                empty_row = value == ''
+                if empty_row:
+                    continue
 
             if col == GENDER:
                 new = parse_gender(value)
@@ -38,10 +46,20 @@ def test_and_prepare_table(table: list) -> list[Error]:
 
                     continue
 
-            # TODO: Check date format
+            if col == BIRTH_DATE:
+                try:
+                    datetime.strptime(value, '%m/%d/%Y')  # TODO: date format
+                except ValueError:
+                    errors.append(Error(DATE_ERROR, col, row, value))
+                    continue
+
 
             # Replace the value in the table if no error occurred
             table[row][col] = new
+
+        if empty_row:
+            errors.append(Error(EMPTY_ERROR, row=row))
+            continue
 
     return errors
 
